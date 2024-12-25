@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang quản lý Ngôi nhà thông minh</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .gauge-container {
+            width: 200px;
+            height: 200px;
+            margin: 40px;
+            position: relative;
+            text-align: center;
+        }
+        .gauge-ring {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                var(--gauge-color) calc(var(--value) * 2.7deg),
+                #e0e0e0 calc(var(--value) * 2.7deg)
+            );
+            border-radius: 50%;
+            mask: radial-gradient(farthest-side, transparent calc(70% - 10px), black 70%);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(70% - 10px), black 70%);
+            transform: rotate(-135deg);
+            clip-path: circle(50%);
+        }
+        .gauge-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .gauge-scale {
+            position: absolute;
+            bottom: -10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 300px;
+            height: 100px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .box h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .box p {
+            margin: 0;
+            font-size: 20px;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .switch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+            margin-top: 10px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 32px;
+            width: 32px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #87CEEB; /* Blue pastel */
+        }
+        input:checked + .slider:before {
+            transform: translateX(40px);
+        }
+        .nav-bar {
+            width: 100%;
+            background-color: #b8b9b9;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .nav-bar button {
+            background-color: #87CEEB;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .nav-bar button:hover {
+            background-color: #5bb0d4;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <button onclick="location.href='/log_checking'">Log Checking</button>
+        <button onclick="location.href='/logout'">Logout</button>
+    </div>
+    <h1>Trang quản lý Ngôi nhà thông minh</h1>
+    <div style="display: flex; width: 100%; justify-content: space-around;">
+        <div class="gauge-container">
+            <div class="gauge-ring" id="temperatureGauge" style="--value: 0; --gauge-color: #ff9999;"></div>
+            <div class="gauge-value" id="temperature">N/A</div>
+            <div class="gauge-scale">
+                <span>-20</span>
+                <span>80</span>
+            </div>
+        </div>
+        <div class="gauge-container">
+            <div class="gauge-ring" id="humidityGauge" style="--value: 0; --gauge-color: #87CEEB;"></div>
+            <div class="gauge-value" id="humidity">N/A</div>
+            <div class="gauge-scale">
+                <span>0</span>
+                <span>100</span>
+            </div>
+        </div>
+    </div>
+    <div class="box">
+        <h2>Người trong phòng</h2>
+        <p id="hasPeople">N/A</p>
+    </div>
+    <div class="button-container">
+        <div class="switch-container">
+            <span>Bật đèn</span>
+            <label class="switch">
+                <input type="checkbox" onclick="togglePin('pin_den')">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch-container">
+            <span>Bật điều hòa</span>
+            <label class="switch">
+                <input type="checkbox" onclick="togglePin('pin_dieuhoa')">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    updateGauge('temperatureGauge', data.nhietDo, -20, 80, '#ff9999');
+                    updateGauge('humidityGauge', data.doAm, 0, 100, '#87CEEB');
+                    document.getElementById('temperature').innerText = data.nhietDo + '°C';
+                    document.getElementById('humidity').innerText = data.doAm + '%';
+                    document.getElementById('hasPeople').innerText = data.coNguoi;
+                });
+        }
+        function togglePin(pin) {
+            fetch('/toggle_pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ pin: pin })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const button = document.querySelector(`input[onclick="togglePin('${pin}')"]`);
+                if (data[pin] == 1) {
+                    button.checked = true;
+                } else {
+                    button.checked = false;
+                }
+            });
+        }
+        function updateGauge(gaugeId, value, min, max, color) {
+            const gauge = document.getElementById(gaugeId);
+            const percentage = ((value - min) / (max - min)) * 100;
+            gauge.style.setProperty('--value', percentage);
+            gauge.style.setProperty('--gauge-color', color);
+        }
+        window.onload = function() {
+            setInterval(fetchData, 1000); // Refresh every second
+        }
+    </script>
+</body>
+</html>

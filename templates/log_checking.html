@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Checking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .nav-bar {
+            width: 100%;
+            background-color: #b8b9b9;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .nav-bar button {
+            background-color: #87CEEB;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .nav-bar button:hover {
+            background-color: #5bb0d4;
+        }
+        .log-container {
+            width: 80%;
+            height: 60%;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: scroll;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <button onclick="location.href='/dashboard'">Dashboard</button>
+        <button onclick="location.href='/logout'">Logout</button>
+    </div>
+    <h1>Log Checking</h1>
+    <div class="log-container">
+        <pre id = "log_content">{{ log_content }}</pre>
+    </div>
+    <script>
+        function fetchLog() {
+            fetch('/log')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('log_content').innerText = data;
+                });
+        }
+        setInterval(fetchLog, 1000); // Refresh every second
+    </script>
+</body>
+</html>

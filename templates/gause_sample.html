@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gauge Ring</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f3f3f3;
+      font-family: Arial, sans-serif;
+    }
+
+    .gauge-container {
+      text-align: center;
+      width: 150px;
+      height: 150px;
+      position: relative;
+    }
+
+    .gauge-ring {
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(
+        #36c371 calc(var(--value) * 2.7deg), /* Dynamic value scaled to 60% of the circle */
+        #e0e0e0 calc(var(--value) * 2.7deg)
+      );
+      border-radius: 50%;
+      mask: radial-gradient(farthest-side, transparent calc(70% - 10px), black 70%);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(70% - 10px), black 70%);
+      transform: rotate(-135deg);
+      clip-path: circle(50%);
+    }
+
+    .gauge-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .gauge-scale {
+      position: absolute;
+      bottom: -10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="gauge-container">
+    <div class="gauge-ring" style="--value: 42;"></div> <!-- Set the value dynamically -->
+    <div class="gauge-value">42</div>
+    <div class="gauge-scale">
+      <span>0</span>
+      <span>100</span>
+    </div>
+  </div>
+
+  <script>
+    // Function to update the gauge value and its appearance
+    function updateGauge(value) {
+      const gaugeRing = document.querySelector('.gauge-ring');
+      const gaugeValue = document.querySelector('.gauge-value');
+      
+      // Ensure the value does not exceed 100
+      value = Math.min(value, 100);
+      gaugeRing.style.setProperty('--value', value);  // Update the value in the gauge ring
+      gaugeValue.textContent = value;  // Update the value text
+    }
+
+    // Example: Change the gauge value
+    setTimeout(() => {
+      updateGauge(100);  // Update the value to 75 after 2 seconds
+    }, 2000);
+  </script>
+</body>
+</html>

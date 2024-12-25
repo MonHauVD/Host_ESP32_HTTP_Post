@@ -28,6 +28,8 @@ sys.stderr = dual_stream
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+app.logger.setLevel(logging.ERROR)
+
 @app.before_request
 def before_request():
     if request.path == '/log':

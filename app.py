@@ -2,6 +2,15 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from http.server import SimpleHTTPRequestHandler
 import os
 import sys
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    handler = MyServer(request.environ, request.environ['wsgi.errors'], request.environ['wsgi.input'])
+    return handler.do_GET()
+
 hostName = "192.168.0.102"
 # hostName = "127.0.0.1"
 # hostName = "localhost"

@@ -9,7 +9,7 @@ class DualStream:
     def __init__(self, terminal, log_file):
         self.terminal = terminal
         self.log_file = log_file
-        self.suppress_terminal = False
+        # self.suppress_terminal = False
 
     def write(self, message):
         self.terminal.write(message)
@@ -32,11 +32,12 @@ log.setLevel(logging.ERROR)
 def before_request():
     if request.path == '/log':
         dual_stream.suppress_terminal = True
+        
 
-# @app.after_request
-# def after_request(response):
-#     dual_stream.suppress_terminal = False
-#     return response
+@app.after_request
+def after_request(response):
+    dual_stream.suppress_terminal = False
+    return response
 
 # Serve the main HTML page
 @app.route('/')

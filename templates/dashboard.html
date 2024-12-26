@@ -18,11 +18,13 @@
             margin-bottom: 20px;
         }
         .gauge-container {
-            width: 200px;
-            height: 200px;
-            margin: 40px;
             position: relative;
-            text-align: center;
+            width: 180px; /* Adjust as needed */
+            height: 180px; /* Adjust as needed */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .gauge-ring {
             width: 100%;
@@ -45,6 +47,18 @@
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
+        }
+        .gauge-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gauge-title {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
         }
         .gauge-scale {
             position: absolute;
@@ -131,6 +145,8 @@
             transform: translateX(40px);
         }
         .nav-bar {
+            position: fixed;
+            top: 0;
             width: 100%;
             background-color: #b8b9b9;
             color: white;
@@ -141,6 +157,8 @@
         }
         .nav-bar button {
             background-color: #87CEEB;
+            margin: 5px;
+            margin-left: 10px;
             border: none;
             border-radius: 5px;
             color: white;
@@ -160,22 +178,28 @@
         <button onclick="location.href='/logout'">Logout</button>
     </div>
     <h1>Trang quản lý Ngôi nhà thông minh</h1>
-    <div style="display: flex; width: 100%; justify-content: space-around;">
-        <div class="gauge-container">
-            <div class="gauge-ring" id="temperatureGauge" style="--value: 0; --gauge-color: #ff9999;"></div>
-            <div class="gauge-value" id="temperature">N/A</div>
-            <div class="gauge-scale">
-                <span>-20</span>
-                <span>80</span>
+    <div style="display: flex; width: 100%; height: 35%; justify-content: space-around;">
+        <div class="gauge-wrapper">
+            <div class="gauge-container">
+                <div class="gauge-ring" id="temperatureGauge" style="--value: 0; --gauge-color: #ff9999;"></div>
+                <div class="gauge-value" id="temperature">N/A</div>
+                <div class="gauge-scale">
+                    <span>-20</span>
+                    <span>80</span>
+                </div>
             </div>
+            <div class="gauge-title">Nhiệt độ</div>
         </div>
-        <div class="gauge-container">
-            <div class="gauge-ring" id="humidityGauge" style="--value: 0; --gauge-color: #87CEEB;"></div>
-            <div class="gauge-value" id="humidity">N/A</div>
-            <div class="gauge-scale">
-                <span>0</span>
-                <span>100</span>
+        <div class="gauge-wrapper">
+            <div class="gauge-container">
+                <div class="gauge-ring" id="humidityGauge" style="--value: 0; --gauge-color: #87CEEB;"></div>
+                <div class="gauge-value" id="humidity">N/A</div>
+                <div class="gauge-scale">
+                    <span>0</span>
+                    <span>100</span>
+                </div>
             </div>
+            <div class="gauge-title">Độ ẩm</div>
         </div>
     </div>
     <div class="box">

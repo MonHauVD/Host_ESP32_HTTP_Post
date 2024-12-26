@@ -432,53 +432,6 @@ void loop() {
         }
       }
   }
-  // int pin34 = analogRead(READ_IR_ANALOG_FROM_OTHER_ESP32);
-  // Serial.printf("pin34 %d\n", pin34);
-  // if (pin34 == 1) {
-  //   Serial.println("On/Off");
-  //   if (isTurnOffLight) {
-  //     isTurnOffLight = false;
-  //     displayMessage("Bat den...");
-  //     buttonBatDenSound();
-  //   } else {
-  //     isTurnOffLight = true;
-  //     displayMessage("Tat den...");
-  //     buttonTatDenSound();
-  //   }
-  // } else if (pin34 == 2) {
-  //   Serial.println("Speed");
-  //   if (isTurnOffDieuHoa) {
-  //     isTurnOffDieuHoa = false;
-  //     displayMessage("Bat dieu hoa...");
-  //     buttonBatDieuHoaSound();
-  //   } else {
-  //     isTurnOffDieuHoa = true;
-  //     displayMessage("Tat dieu hoa...");
-  //     buttonTatDieuHoaSound();
-  //   }
-  // } else if (pin34 == 3) {
-  //   Serial.println("Timer");
-  //   if (addUserMode) {
-  //     addUserMode = false;
-  //   } else {
-  //     addUserMode = true;
-  //   }
-  //   pressedButtonThemNguoi = false;
-  //   addUser();
-  // } else if (pin34 == 4) {
-  //   Serial.println("Swing");
-  //   if (isDoorClosed) {
-  //     isDoorClosed = false;
-  //     displayMessage("Dang mo cua...");
-  //     buttonCuaMoSound();
-  //     openDoor();
-  //   } else {
-  //     isDoorClosed = true;
-  //     displayMessage("Dang dong cua...");
-  //     buttonCuaDongSound();
-  //     lockDoor();
-  //   }
-  // }
 
   dieuKhienDen();
   dieuKhienDieuHoa();
@@ -656,7 +609,7 @@ void dieuKhienDieuHoa() {
     // Serial.println("Nhiet do: " + String(nhietDo, 1) + "°C");
     // Serial.println("Do am: " + String(doAm, 1) + "%");
     // Serial.printf("Cam bien anh sang: %d\n", lightLevel);
-    if (nhietDo > 30 || doAm > 90) {
+    if (nhietDo > 30 || doAm > 75) {
       currDieuHoaState = 1;
     } else {
       currDieuHoaState = 0;

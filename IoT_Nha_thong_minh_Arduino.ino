@@ -61,12 +61,13 @@ Button C
 #define BLYNK_PRINT Serial
 #include <BlynkSimpleEsp32.h>
 
+#define DECODE_NEC
 #define IR_RECEIVE_PIN 34
 #define SEND_PWM_BY_TIMER
-#ifdef IR_TIMER_USE_ESP32
-hw_timer_t *timer;
-void IRTimer(); // defined in IRremote.cpp
-#endif
+// #ifdef IR_TIMER_USE_ESP32
+// hw_timer_t *timer;
+// void IRTimer(); // defined in IRremote.cpp
+// #endif
 
 #include <IRremote.hpp>
 
@@ -84,8 +85,8 @@ void IRTimer(); // defined in IRremote.cpp
 const char* ssid = "Dung";
 const char* pass = "khongcomatkhau!";
 
-// const char* ssid = "Viet Dung";
-// const char* pass = "MonHauVD121";
+const char* ssid2 = "Viet Dung";
+const char* pass2 = "MonHauVD121";
 
 // const char* server_name = "http://192.168.0.102:8080/process";
 const char* server_name = "https://host-esp32-http-post.onrender.com/process";
@@ -264,19 +265,25 @@ void setup() {
   printActiveIRProtocols(&Serial);
   Serial.printf("at pin %d\n", IR_RECEIVE_PIN);
 
-  WiFi.begin(ssid, pass);
-  Serial.print("conecting");
-  displayMessage("conecting");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    display.print(".");
-    display.display();
+  if (connectToWiFi(ssid, pass, 10000)) {
+    Serial.println("Connected to WiFi 1");
+    Serial.println("");
+    Serial.println("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
+    displayMessage("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  } else if (connectToWiFi(ssid2, pass2, 100000)) {
+    Serial.println("Connected to WiFi 2");
+    Serial.println("");
+    Serial.println("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
+    displayMessage("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid2, pass2);
+  } else {
+    Serial.println("Failed to connect to any WiFi");
+    displayMessage("WiFi Failed");
+    Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+    // Handle failure case (e.g., retry or go into offline mode)
   }
-  Serial.println("");
-  Serial.println("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
-  displayMessage("Connected to WiFi network with IP Address: " + String(WiFi.localIP()));
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  // Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
   blynkTimer.setInterval(1000L, myTimer);
   // Khởi động hoàn tất
   Serial.println("Hệ thống sẵn sàng.");
@@ -284,10 +291,12 @@ void setup() {
 }
 
 void loop() {
+  
   Blynk.run();
   blynkTimer.run();
+  
   if (!addUserMode) {
-    // mfrc522.PCD_Init();
+    // IrReceiver.stop();
     if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
       String cardUID = getCardUID();
       Serial.printf("Card UID: |%s|\n", cardUID);
@@ -306,6 +315,7 @@ void loop() {
       mfrc522.PICC_HaltA();  // Ngắt giao tiếp với thẻ
       // IrReceiver.restartTimer();
     }
+    // IrReceiver.start();
   }
 
 
@@ -349,7 +359,7 @@ void loop() {
   }
 
   // dieuKhienDen();
-
+  IrReceiver.restartTimer();
   if (IrReceiver.decode()) {
 
         /*
@@ -432,14 +442,12 @@ void loop() {
         }
       }
   }
-
   dieuKhienDen();
   dieuKhienDieuHoa();
   if (millis() - lastMessageTime >= displayDuration && lastMessageTime != 0) {
     displayMessage("He thong san sang\n\nNhiet do: " + String(nhietDoGuiDi) + "'C\n" + "Do am: " + String(doAmGuiDi) + "%");
     lastClearTime = millis();  // Reset the timer
   }
-
   httpSync();
 }
 
@@ -532,6 +540,7 @@ bool readButtonThemNguoi() {
 
 void addUser() {
   if (addUserMode) {
+    // IrReceiver.stop();
     displayMessage("Che do them nguoi dung.");
     while (!readButtonThemNguoi()) {
       if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
@@ -567,6 +576,7 @@ void addUser() {
       addUserMode = false;
     }
     mfrc522.PICC_HaltA();
+    // IrReceiver.start();
   }
 }
 
@@ -609,7 +619,7 @@ void dieuKhienDieuHoa() {
     // Serial.println("Nhiet do: " + String(nhietDo, 1) + "°C");
     // Serial.println("Do am: " + String(doAm, 1) + "%");
     // Serial.printf("Cam bien anh sang: %d\n", lightLevel);
-    if (nhietDo > 30 || doAm > 75) {
+    if (nhietDo > 30 || doAm > 70) {
       currDieuHoaState = 1;
     } else {
       currDieuHoaState = 0;
@@ -840,6 +850,31 @@ void smoothMove(int startPos, int endPos, int delayTime) {
   // IrReceiver.restartTimer();
 }
 
+bool connectToWiFi(const char* ssid, const char* password, unsigned long timeout) {
+  unsigned long startAttemptTime = millis();
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi: ");
+  Serial.println(ssid);
+  displayMessage("Connecting to WiFi" + String(ssid));
+  delay(100);
+  displayMessage("Connecting");
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    if (millis() - startAttemptTime > timeout) {
+      Serial.println("Connection Timeout");
+      return false; // Timeout reached, return false
+    }
+    delay(500);
+    Serial.print(".");
+    display.print(".");
+    display.display();
+  }
+  
+  Serial.println("\nWiFi Connected!");
+  displayMessage("Connected!");
+  return true; // Successfully connected
+}
 
 /*
 Hãy viết một đoạn code Arduino có sử dụng các linh kiện sau:
